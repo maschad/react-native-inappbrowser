@@ -71,14 +71,18 @@ RCT_EXPORT_METHOD(openAuth:(NSString *)authURL
 
   if (@available(iOS 11, *)) {
     NSURL *url = [[NSURL alloc] initWithString: authURL];
+    __weak typeof(self) weakSelf = self;
     void (^completionHandler)(NSURL * _Nullable, NSError *_Nullable) = ^(NSURL* _Nullable callbackURL, NSError* _Nullable error) {
+      __strong typeof(weakSelf) strongSelf = weakSelf;
+
           NSString *url = callbackURL.absoluteString;
           redirectResolve(@{
             @"type" : @"success",
             @"url" : url,
           });
 
-
+        [strongSelf flowDidFinish];
+      }
     };
 
     if (@available(iOS 12.0, *)) {
