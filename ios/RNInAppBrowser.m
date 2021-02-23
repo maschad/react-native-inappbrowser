@@ -68,26 +68,17 @@ RCT_EXPORT_METHOD(openAuth:(NSString *)authURL
   }
 
   BOOL ephemeralWebSession = [options[@"ephemeralWebSession"] boolValue];
-    
+
   if (@available(iOS 11, *)) {
     NSURL *url = [[NSURL alloc] initWithString: authURL];
-    __weak typeof(self) weakSelf = self;
     void (^completionHandler)(NSURL * _Nullable, NSError *_Nullable) = ^(NSURL* _Nullable callbackURL, NSError* _Nullable error) {
-      __strong typeof(weakSelf) strongSelf = weakSelf;
-      if (strongSelf) {
-        if (!error) {
           NSString *url = callbackURL.absoluteString;
           redirectResolve(@{
             @"type" : @"success",
             @"url" : url,
           });
-        } else {
-          redirectResolve(@{
-            @"type" : @"cancel",
-          });
-        }
-        [strongSelf flowDidFinish];
-      }
+
+
     };
 
     if (@available(iOS 12.0, *)) {
@@ -143,7 +134,7 @@ RCT_EXPORT_METHOD(open:(NSDictionary *)options
   NSNumber* preferredControlTintColor = [options valueForKey:@"preferredControlTintColor"];
   NSString* modalPresentationStyle = [options valueForKey:@"modalPresentationStyle"];
   NSString* modalTransitionStyle = [options valueForKey:@"modalTransitionStyle"];
-  
+
   BOOL readerMode = [options[@"readerMode"] boolValue];
   BOOL enableBarCollapsing = [options[@"enableBarCollapsing"] boolValue];
   modalEnabled = [options[@"modalEnabled"] boolValue];
@@ -186,7 +177,7 @@ RCT_EXPORT_METHOD(open:(NSDictionary *)options
     UINavigationController *safariHackVC = [[UINavigationController alloc] initWithRootViewController:safariVC];
     [safariHackVC setNavigationBarHidden:true animated:false];
 
-    // To disable "Swipe to dismiss" gesture which sometimes causes a bug where `safariViewControllerDidFinish` 
+    // To disable "Swipe to dismiss" gesture which sometimes causes a bug where `safariViewControllerDidFinish`
     // is not called.
     safariVC.modalPresentationStyle = UIModalPresentationOverFullScreen;
     safariHackVC.modalPresentationStyle = [self getPresentationStyle: modalPresentationStyle];
